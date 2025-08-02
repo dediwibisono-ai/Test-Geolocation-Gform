@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Location Restricted Form</title>
+  <style>
+    body {
+      font-family: Arial;
+      padding: 20px;
+      text-align: center;
+    }
+    iframe {
+      width: 100%;
+      height: 800px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>Access Form Based on Your Location</h2>
+  <div id="status">Checking your location...</div>
+  <div id="form-container" style="display:none;">
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSc4ALhA1MxHdqC3AAYXnB0GyrDuho3-jxAksUPeO3BVxkvmkg/viewform?usp=dialog"></iframe>
+  </div>
+  <div id="error" style="display:none; color: red;">
+    <p>Access to this form is only available from an approved location.</p>
+  </div>
+
+  <script>
+    const allowedLat = -6.263411;
+    const allowedLon = 106.748846;
+    const allowedRadius = 0.002; // ~200 meters
+
+    function isWithinRange(userLat, userLon) {
+      const latDiff = Math.abs(userLat - allowedLat);
+      const lonDiff = Math.abs(userLon - allowedLon);
+      return latDiff <= allowedRadius && lonDiff <= allowedRadius;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        const userLat = position.coords.latitude;
+        const userLon = position.coords.longitude;
+
+        if (isWithinRange(userLat, userLon)) {
+          document.getElementById('status').style.display = 'none';
+          document.getElementById('form-container').style.display = 'block';
+        } else {
+          document.getElementById('status').style.display = 'none';
+          document.getElementById('error').style.display = 'block';
+        }
+      },
+      function(error) {
+        document.getElementById('status').innerText = "Please allow location access to continue.";
+      }
+    );
+  </script>
+</body>
+</html>
